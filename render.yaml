@@ -1,0 +1,44 @@
+# Render blueprint for the ÉLAN API (Express + Socket.IO).
+# Use it with: Render dashboard -> New -> Blueprint -> pick this repository.
+# If you deploy from the monorepo instead of a separate server repository, add `rootDir: server` under the service.
+# Step by step: docs/deployment.md in the project root.
+services:
+  - type: web
+    name: elan-api
+    runtime: node
+    plan: free            # sleeps after ~15 minutes without traffic; use a paid plan for a real restaurant
+    region: singapore     # closest Render region to Bangladesh
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /api/health
+    autoDeploy: true
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      - key: NODE_ENV
+        value: production
+      # Two proxies sit in front of the API when the site forwards /api through Vercel (Vercel, then Render).
+      # Use 1 if browsers call this service directly. Not verified against live hosts, see docs/deployment.md.
+      - key: TRUST_PROXY
+        value: "2"
+      - key: RESTAURANT_TZ_OFFSET_MINUTES
+        value: "360"      # Dhaka, UTC+6
+      - key: ALLOW_DEMO_SEED
+        value: "false"    # set to "true" only on a labelled demo deployment
+      - key: DEMO_MODE
+        value: "false"
+      # Secrets: Render generates long random values. They must never be the development defaults.
+      - key: SOCKET_TOKEN_SECRET
+        generateValue: true
+      - key: PAYMENT_WEBHOOK_SECRET
+        generateValue: true
+      # You are asked for these three when the blueprint is created.
+      - key: MONGODB_URI     # MongoDB Atlas connection string, with the database name /elan
+        sync: false
+      - key: CLIENT_ORIGINS  # exact origin of the website, e.g. https://elan.vercel.app (no trailing slash)
+        sync: false
+      - key: PUBLIC_CLIENT_URL
+        sync: false
+      # Optional, add in the dashboard when you have them (see .env.example):
+      #   SMTP_HOST, SMTP_PORT, SMTP_SECURE, SMTP_USER, SMTP_PASS, EMAIL_FROM
+      #   CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET
