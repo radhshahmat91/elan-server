@@ -1,0 +1,138 @@
+// Tables, FAQ, gallery and coupons. The FAQ deliberately avoids anything the live settings already answer
+// (hours, delivery fees, reservation limits, loyalty rates), so it can never contradict them after an edit.
+const DAY = 86_400_000;
+
+export const TABLES = [
+  { number: '1', capacity: 2, section: 'indoor' },
+  { number: '2', capacity: 2, section: 'indoor' },
+  { number: '3', capacity: 4, section: 'indoor' },
+  { number: '4', capacity: 4, section: 'indoor' },
+  { number: '5', capacity: 4, section: 'indoor' },
+  { number: '6', capacity: 6, section: 'indoor' },
+  { number: '7', capacity: 2, section: 'window' },
+  { number: '8', capacity: 2, section: 'window' },
+  { number: '9', capacity: 4, section: 'window' },
+  { number: '10', capacity: 4, section: 'outdoor' },
+  { number: '11', capacity: 4, section: 'outdoor' },
+  { number: '12', capacity: 6, section: 'outdoor' },
+  { number: '13', name: 'Arch Room', capacity: 8, section: 'private' },
+  { number: '14', name: 'Garden Room', capacity: 12, section: 'private' },
+];
+
+const faq = (category, question, questionBn, answer, answerBn, keywords, keywordsBn, sortOrder) => ({ category, question, questionBn, answer, answerBn, keywords, keywordsBn, sortOrder });
+
+export const FAQS = [
+  faq('dining', 'Is your food halal?', 'আপনাদের খাবার কি হালাল?',
+    'Yes. All our meat is halal, and we do not serve alcohol.', 'হ্যাঁ। আমাদের সব মাংস হালাল, এবং আমরা অ্যালকোহল পরিবেশন করি না।',
+    ['halal', 'pork', 'haram'], ['হালাল', 'হারাম'], 1),
+  faq('dining', 'Do you serve alcohol?', 'আপনারা কি অ্যালকোহল পরিবেশন করেন?',
+    'No. Our bar makes alcohol-free drinks in house: spritzes, tonics, sodas, cold brew and chai.', 'না। আমাদের বার বাড়িতে অ্যালকোহলমুক্ত পানীয় বানায়: স্প্রিৎজ, টনিক, সোডা, কোল্ড ব্রু আর চা।',
+    ['alcohol', 'wine', 'beer', 'cocktail', 'drinks bar'], ['অ্যালকোহল', 'মদ', 'ওয়াইন'], 2),
+  faq('dining', 'Is there parking?', 'গাড়ি রাখার জায়গা আছে কি?',
+    'There is a small valet area at the front door. The road gets busy after 8 pm, so a ride-share to the door is often easiest.', 'সামনের দরজায় ছোট ভ্যালেট পার্কিং আছে। রাত ৮টার পর রাস্তায় ভিড় থাকে, তাই রাইড-শেয়ারে দরজা পর্যন্ত আসাই সহজ।',
+    ['parking', 'valet', 'car'], ['পার্কিং', 'গাড়ি'], 3),
+  faq('dining', 'Is there a dress code?', 'কোনো ড্রেস কোড আছে কি?',
+    'No dress code. Smart casual feels at home here, and so does whatever you wore to work.', 'কোনো ড্রেস কোড নেই। স্মার্ট ক্যাজুয়াল মানানসই, আর অফিস থেকে এলে যা পরে এসেছেন তাও চলবে।',
+    ['dress', 'code', 'wear', 'attire'], ['ড্রেস', 'পোশাক'], 4),
+  faq('dining', 'Are children welcome?', 'শিশুদের নিয়ে আসা যাবে কি?',
+    'Very much. We have high chairs, and the kitchen will happily make a smaller, milder portion of most dishes. Just ask.', 'অবশ্যই। আমাদের হাই চেয়ার আছে, আর রান্নাঘর বেশিরভাগ খাবারের ছোট ও কম ঝালের পোর্শন বানিয়ে দেয়। শুধু বলুন।',
+    ['children', 'kids', 'child', 'baby', 'high chair', 'family'], ['শিশু', 'বাচ্চা', 'ছেলেমেয়ে'], 5),
+  faq('dining', 'Is the restaurant step-free?', 'রেস্টুরেন্টে কি সিঁড়ি ছাড়া ঢোকা যায়?',
+    'The entrance and the ground-floor washroom are step-free. Tell us when you book and we will give you a table with room to move.', 'প্রবেশপথ আর নিচতলার ওয়াশরুমে সিঁড়ি নেই। বুকিংয়ের সময় জানালে চলাচলের জায়গাসহ টেবিল রাখব।',
+    ['accessible', 'accessibility', 'wheelchair', 'step', 'disabled', 'ramp'], ['হুইলচেয়ার', 'প্রতিবন্ধী'], 6),
+  faq('dining', 'Can I host a private event?', 'আমি কি ব্যক্তিগত অনুষ্ঠান করতে পারি?',
+    'The Arch Room seats 8 and the Garden Room up to 12, with a set menu. Send us the date and number of guests from the contact page and we will reply within a working day.', 'আর্চ রুমে ৮ জন এবং গার্ডেন রুমে ১২ জন পর্যন্ত বসা যায়, সেট মেনুসহ। যোগাযোগের পাতা থেকে তারিখ আর অতিথি সংখ্যা জানান, এক কর্মদিবসের মধ্যে উত্তর দেব।',
+    ['private', 'event', 'party', 'birthday', 'celebration', 'corporate', 'room'], ['প্রাইভেট', 'অনুষ্ঠান', 'পার্টি', 'জন্মদিন'], 7),
+  faq('dining', 'What if I am late for my reservation?', 'রিজার্ভেশনে দেরি হলে কী হবে?',
+    'We hold your table for 15 minutes after your seating time. If you will be later than that, please call us.', 'আপনার সময়ের পর ১৫ মিনিট আমরা টেবিল ধরে রাখি। এর বেশি দেরি হলে ফোন করুন।',
+    ['late', 'delay', 'running late', 'hold', 'on time'], ['দেরি', 'লেট'], 8),
+  faq('dietary', 'Do you have vegetarian or vegan dishes?', 'নিরামিষ বা ভেগান খাবার আছে কি?',
+    'Yes. Use the Vegetarian and Vegan filters on the menu. Every dish page lists its tags and the allergens our kitchen has verified.', 'হ্যাঁ। মেনুতে নিরামিষ ও ভেগান ফিল্টার ব্যবহার করুন। প্রতিটি খাবারের পাতায় ট্যাগ আর রান্নাঘরের যাচাই করা অ্যালার্জেন দেওয়া আছে।',
+    ['vegetarian', 'vegan', 'plant', 'meatless', 'veg'], ['নিরামিষ', 'ভেগান'], 9),
+  faq('dietary', 'I have a food allergy. What should I do?', 'আমার খাবারে অ্যালার্জি আছে। কী করব?',
+    'Tell us when you order (use the note box) and again at the table. Dish pages list verified allergens, but we cook in one shared kitchen, so we cannot promise there will be no traces.', 'অর্ডারের সময় নোট বক্সে এবং টেবিলে আবার জানান। খাবারের পাতায় যাচাই করা অ্যালার্জেন আছে, তবে আমাদের রান্নাঘর একটাই, তাই সামান্য মিশে যাওয়া নেই বলে নিশ্চয়তা দিতে পারি না।',
+    ['allergy', 'allergic', 'allergen', 'gluten', 'nut', 'peanut', 'celiac', 'intolerance'], ['অ্যালার্জি', 'গ্লুটেন', 'বাদাম'], 10),
+  faq('dietary', 'Can I change a dish?', 'খাবারে কি কোনো পরিবর্তন করা যায়?',
+    'Choose from the options on each dish page. For anything else, add a note at checkout and the kitchen will tell you what is possible.', 'প্রতিটি খাবারের পাতায় দেওয়া অপশন থেকে বেছে নিন। অন্য কিছু চাইলে চেকআউটে নোট লিখুন, রান্নাঘর জানাবে কী সম্ভব।',
+    ['change', 'modify', 'substitute', 'without', 'swap', 'remove'], ['বদল', 'ছাড়া'], 11),
+  faq('ordering', 'How do I track my order?', 'আমার অর্ডার কীভাবে ট্র্যাক করব?',
+    'Open the tracking link shown after checkout. You can also go to Track order and enter your order number and phone number.', 'চেকআউটের পর দেখানো ট্র্যাকিং লিংকটি খুলুন। অথবা ট্র্যাক অর্ডার পাতায় অর্ডার নম্বর আর ফোন নম্বর দিন।',
+    ['track', 'tracking', 'status', 'follow', 'where is my order'], ['ট্র্যাক', 'অর্ডার কোথায়'], 12),
+  faq('ordering', 'Can I change or cancel an order?', 'অর্ডার বদলানো বা বাতিল করা যায় কি?',
+    'You can cancel it yourself until the kitchen accepts it. After that, call us and we will see what we can do.', 'রান্নাঘর গ্রহণ করার আগ পর্যন্ত আপনি নিজেই বাতিল করতে পারেন। তারপর ফোন করুন, দেখব কী করা যায়।',
+    ['cancel', 'cancellation', 'edit order', 'change order', 'refund'], ['বাতিল', 'ক্যানসেল'], 13),
+  faq('ordering', 'Can I order for a later time?', 'পরের সময়ের জন্য অর্ডার করা যায় কি?',
+    'Not yet: an order starts when you place it. For a planned meal, reserve a table instead.', 'এখনো নয়: অর্ডার দেওয়ার মুহূর্তেই শুরু হয়। আগে থেকে পরিকল্পনা করতে চাইলে টেবিল রিজার্ভ করুন।',
+    ['later', 'schedule', 'scheduled', 'in advance', 'pre-order', 'preorder'], ['পরে', 'আগাম'], 14),
+  faq('ordering', 'Can I order from my table?', 'টেবিল থেকেই কি অর্ডার করা যায়?',
+    'Yes. Scan the QR code on your table and order from your phone. There is nothing to install.', 'হ্যাঁ। টেবিলের কিউআর কোড স্ক্যান করে ফোন থেকে অর্ডার করুন। কিছু ইনস্টল করতে হয় না।',
+    ['qr', 'scan', 'table order', 'order from table', 'dine in'], ['কিউআর', 'স্ক্যান'], 15),
+  faq('ordering', 'Something is wrong with my order. What now?', 'আমার অর্ডারে সমস্যা হয়েছে। এখন কী করব?',
+    'Message us from the contact page or the chat within 24 hours, with your order number. We will make it right with a remake or a refund.', 'অর্ডার নম্বরসহ ২৪ ঘণ্টার মধ্যে যোগাযোগ পাতা বা চ্যাট থেকে জানান। আমরা আবার বানিয়ে দেব বা টাকা ফেরত দেব।',
+    ['wrong', 'missing', 'cold', 'problem', 'complaint', 'issue', 'damaged'], ['সমস্যা', 'অভিযোগ', 'ভুল'], 16),
+  faq('payments', 'Is paying online safe?', 'অনলাইনে পেমেন্ট কি নিরাপদ?',
+    'Card, bKash and Nagad payments happen on the payment provider\'s own page. We never see or store your card or wallet details. In this demo build the provider is a sandbox, so no real money moves.', 'কার্ড, বিকাশ ও নগদের পেমেন্ট পেমেন্ট প্রদানকারীর নিজস্ব পাতায় হয়। আমরা আপনার কার্ড বা ওয়ালেটের তথ্য দেখি না, রাখিও না। এই ডেমো সংস্করণে প্রদানকারী একটি স্যান্ডবক্স, তাই আসল টাকা কাটা হয় না।',
+    ['safe', 'secure', 'security', 'online payment', 'card details'], ['নিরাপদ', 'নিরাপত্তা'], 17),
+  faq('rewards', 'Do my points expire?', 'আমার পয়েন্ট কি মেয়াদ শেষ হয়?',
+    'Points do not expire while your account is active.', 'আপনার অ্যাকাউন্ট সক্রিয় থাকলে পয়েন্টের মেয়াদ শেষ হয় না।',
+    ['expire', 'expiry', 'expiration', 'points last', 'valid'], ['মেয়াদ'], 18),
+  faq('rewards', 'How does referring a friend work?', 'বন্ধুকে রেফার করলে কী হয়?',
+    'Share the referral code on your Rewards page. When a friend signs up with it and their first order is delivered, you earn bonus points.', 'পুরস্কার পাতার রেফারেল কোড বন্ধুকে দিন। সে ওই কোড দিয়ে নিবন্ধন করে প্রথম অর্ডার পেলে আপনি বোনাস পয়েন্ট পাবেন।',
+    ['refer', 'referral', 'friend', 'invite', 'code'], ['রেফার', 'বন্ধু'], 19),
+];
+
+export const GALLERY = [
+  { title: 'Ilish bhapa', titleBn: 'ইলিশ ভাপা', alt: 'A steamed hilsa steak in mustard on a banana leaf', altBn: 'কলাপাতায় সরিষায় ভাপা ইলিশের টুকরো', category: 'food', art: { motif: 'hilsa', seed: 131 } },
+  { title: 'Ribeye off the charcoal', titleBn: 'কয়লার আঁচে রিবআই', alt: 'A thick ribeye steak, sliced, on a wooden board', altBn: 'কাঠের বোর্ডে কাটা মোটা রিবআই স্টেক', category: 'food', art: { motif: 'ribeye', seed: 113 } },
+  { title: 'Burrata and tomato', titleBn: 'বুরাটা ও টমেটো', alt: 'Burrata on roasted tomatoes with basil oil', altBn: 'ভাজা টমেটোর ওপর বুরাটা, বেসিল অয়েলসহ', category: 'food', art: { motif: 'burrata', seed: 53 } },
+  { title: 'Chocolate fondant', titleBn: 'চকলেট ফন্ডান্ট', alt: 'A chocolate pudding broken open, molten in the middle', altBn: 'ভাঙা চকলেট পুডিং, ভেতরে গলানো চকলেট', category: 'food', art: { motif: 'fondant', seed: 163 } },
+  { title: 'Kacchi biryani', titleBn: 'কাচ্চি বিরিয়ানি', alt: 'A plate of kacchi biryani with saffron rice', altBn: 'জাফরানি ভাতসহ কাচ্চি বিরিয়ানির প্লেট', category: 'food', art: { motif: 'biryani', seed: 149 } },
+  { title: 'The dining room', titleBn: 'ডাইনিং রুম', alt: 'The main dining room lit by low lamps', altBn: 'নিচু বাতিতে আলোকিত প্রধান ডাইনিং রুম', category: 'restaurant', art: { scene: 'dining-room', seed: 5 } },
+  { title: 'The terrace at dusk', titleBn: 'সন্ধ্যায় টেরেস', alt: 'The outdoor terrace as the light goes', altBn: 'আলো কমে আসার সময় খোলা টেরেস', category: 'restaurant', art: { scene: 'terrace', seed: 9 } },
+  { title: 'A table set for two', titleBn: 'দুজনের জন্য সাজানো টেবিল', alt: 'A window table set for two', altBn: 'জানালার পাশে দুজনের জন্য সাজানো টেবিল', category: 'restaurant', art: { scene: 'table-set', seed: 14 } },
+  { title: 'The street outside', titleBn: 'বাইরের রাস্তা', alt: 'The restaurant entrance on a Dhaka evening', altBn: 'ঢাকার সন্ধ্যায় রেস্টুরেন্টের প্রবেশপথ', category: 'restaurant', art: { scene: 'evening-street', seed: 21 } },
+  { title: 'The pass', titleBn: 'পাস', alt: 'Plates waiting at the pass of the kitchen', altBn: 'রান্নাঘরের পাসে অপেক্ষারত প্লেট', category: 'kitchen', art: { scene: 'kitchen-pass', seed: 27 } },
+  { title: 'Chef Tahmina at work', titleBn: 'কাজে শেফ তাহমিনা', alt: 'A chef\'s hands finishing a plate', altBn: 'প্লেটে শেষ ছোঁয়া দিচ্ছেন শেফের হাত', category: 'kitchen', art: { scene: 'chef-hands', seed: 33 } },
+  { title: 'The bread oven', titleBn: 'রুটির ওভেন', alt: 'Loaves coming out of the wood-fired oven', altBn: 'কাঠের আঁচের ওভেন থেকে বেরোচ্ছে রুটি', category: 'kitchen', art: { scene: 'bread-oven', seed: 39 } },
+  { title: 'Spices from Chawkbazar', titleBn: 'চকবাজারের মশলা', alt: 'Sacks of whole spices at an Old Dhaka market', altBn: 'পুরান ঢাকার বাজারে বস্তাভরা গোটা মশলা', category: 'kitchen', art: { scene: 'market-spices', seed: 45 } },
+  { title: 'The Arch Room', titleBn: 'আর্চ রুম', alt: 'The private room, set for eight', altBn: 'আটজনের জন্য সাজানো ব্যক্তিগত কক্ষ', category: 'events', art: { scene: 'private-room', seed: 51 } },
+  { title: 'The drinks bar', titleBn: 'ড্রিংকস বার', alt: 'The bar, with tonics and spritzes lined up', altBn: 'টনিক আর স্প্রিৎজ সাজানো বার', category: 'events', art: { scene: 'bar', seed: 57 } },
+];
+
+/** Coupons are built relative to "now" so the demo never ships with every offer already expired. */
+export function couponData(now = new Date()) {
+  const inDays = (n) => new Date(now.getTime() + n * DAY);
+  return [
+    {
+      code: 'WELCOME10', type: 'percent', value: 10, maxDiscount: 300, minOrder: 800, firstOrderOnly: true, perUserLimit: 1, usageLimit: null,
+      startsAt: null, expiresAt: inDays(120), appliesTo: [], active: true, showOnSite: true,
+      description: '10% off your first order, up to ৳300.', descriptionBn: 'প্রথম অর্ডারে ১০% ছাড়, সর্বোচ্চ ৳৩০০।',
+      headline: '10% off your first order', headlineBn: 'প্রথম অর্ডারে ১০% ছাড়',
+      terms: 'Orders from ৳800. One use per guest. New accounts only.', termsBn: '৳৮০০ থেকে অর্ডারে। প্রতি অতিথির একবার। শুধু নতুন অ্যাকাউন্ট।',
+    },
+    {
+      code: 'FREESHIP', type: 'free_delivery', value: 0, maxDiscount: null, minOrder: 1500, firstOrderOnly: false, perUserLimit: 3, usageLimit: 500,
+      startsAt: null, expiresAt: inDays(45), appliesTo: ['delivery'], active: true, showOnSite: true,
+      description: 'Free delivery on orders from ৳1,500.', descriptionBn: '৳১,৫০০ থেকে অর্ডারে ডেলিভারি বিনামূল্যে।',
+      headline: 'Free delivery from ৳1,500', headlineBn: '৳১,৫০০ থেকে ডেলিভারি ফ্রি',
+      terms: 'Delivery orders only. Three uses per guest.', termsBn: 'শুধু ডেলিভারি অর্ডারে। প্রতি অতিথি তিনবার।',
+    },
+    {
+      code: 'TABLE15', type: 'percent', value: 15, maxDiscount: 500, minOrder: 1500, firstOrderOnly: false, perUserLimit: 2, usageLimit: 300,
+      startsAt: null, expiresAt: inDays(30), appliesTo: ['dine_in'], active: true, showOnSite: true,
+      description: '15% off when you order from your table, up to ৳500.', descriptionBn: 'টেবিল থেকে অর্ডারে ১৫% ছাড়, সর্বোচ্চ ৳৫০০।',
+      headline: '15% off at the table', headlineBn: 'টেবিলে ১৫% ছাড়',
+      terms: 'Scan the QR code on your table. Orders from ৳1,500.', termsBn: 'টেবিলের কিউআর কোড স্ক্যান করুন। ৳১,৫০০ থেকে অর্ডারে।',
+    },
+    {
+      code: 'BRUNCH100', type: 'fixed', value: 100, maxDiscount: null, minOrder: 600, firstOrderOnly: false, perUserLimit: 5, usageLimit: null,
+      startsAt: null, expiresAt: inDays(90), appliesTo: [], active: true, showOnSite: false,
+      description: '৳100 off any order from ৳600.', descriptionBn: '৳৬০০ থেকে যেকোনো অর্ডারে ৳১০০ ছাড়।',
+    },
+    {
+      code: 'EID2026', type: 'percent', value: 20, maxDiscount: 600, minOrder: 1200, firstOrderOnly: false, perUserLimit: 1, usageLimit: 200, usedCount: 200,
+      startsAt: inDays(-150), expiresAt: inDays(-120), appliesTo: [], active: false, showOnSite: false,
+      description: 'Festival offer. Ended.', descriptionBn: 'উৎসবের অফার। শেষ হয়েছে।',
+    },
+  ];
+}
