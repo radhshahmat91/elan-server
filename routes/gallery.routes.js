@@ -7,6 +7,7 @@ import { objectId, validate, z } from '../middleware/validate.js';
 import { notFound } from '../utils/errors.js';
 import { created, ok } from '../utils/http.js';
 import { audit } from '../services/auditService.js';
+import { galleryUpdateFor } from '../utils/gallery.js';
 
 export const basePath = '/gallery';
 const router = Router();
@@ -74,7 +75,7 @@ router.post(
 );
 
 router.put('/admin/:id', requirePermission('content:update'), validate({ params: z.object({ id: objectId }), body: shape.partial() }), async (req, res) => {
-  const doc = await GalleryItem.findByIdAndUpdate(req.valid.params.id, { $set: req.valid.body }, { new: true }).lean();
+  const doc = await GalleryItem.findByIdAndUpdate(req.valid.params.id, galleryUpdateFor(req.valid.body), { new: true }).lean();
   if (!doc) throw notFound('Picture not found.');
   await audit(req, 'gallery.update', { type: 'gallery', id: doc._id }, `Updated gallery picture ${doc.title}`, { fields: Object.keys(req.valid.body) });
   ok(res, serializeGalleryItem(doc, { admin: true }));
