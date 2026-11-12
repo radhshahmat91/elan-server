@@ -6,17 +6,20 @@
 //   node seed.js --demo       content + labelled demo accounts + six weeks of sample orders, reviews, bookings and chats
 //   node seed.js --demo --reset   remove the demo data (only that) and build it again
 //   node seed.js --demo --dry-run  build the demo data in memory and print a summary; touches no database
+//   --skip-index-check             do not stop when the database has unique indexes ÉLAN did not create
 //
 // The demo accounts share a published password, so --demo and --reset refuse to run in production unless
 // ALLOW_DEMO_SEED=true is set on purpose.
+import mongoose from 'mongoose';
 import { connectDb, disconnectDb } from './config/db.js';
 import { env } from './config/env.js';
 import { DEMO_PASSWORD, DEMO_STAFF, seedAdmin, seedDemoAccounts } from './seed/accounts.js';
 import { seedContent } from './seed/content.js';
 import { planDemoHistory, resetDemo, seedDemoHistory, summarisePlan } from './seed/history.js';
 import { buildCatalogue } from './seed/history/catalogue.js';
+import { explainForeignIndexes, findForeignUniqueIndexes } from './utils/indexGuard.js';
 
-const FLAGS = new Set(['demo', 'content', 'admin', 'reset', 'dry-run', 'help']);
+const FLAGS = new Set(['demo', 'content', 'admin', 'reset', 'dry-run', 'skip-index-check', 'help']);
 const args = process.argv.slice(2).map((a) => a.replace(/^--/, ''));
 const unknown = args.filter((a) => !FLAGS.has(a));
 const has = (name) => args.includes(name);
@@ -31,6 +34,7 @@ function usage() {
   node seed.js --demo             content, demo accounts and six weeks of sample activity
   node seed.js --demo --reset     remove the demo data, then build it again
   node seed.js --demo --dry-run   build the demo data in memory and print a summary (no database)
+  --skip-index-check              carry on even if the database has unique indexes ÉLAN did not create
 
 Flags can be combined, for example: node seed.js --content --admin
 `);
@@ -106,6 +110,14 @@ async function main() {
   console.log('\nÉLAN seed');
   await connectDb();
   try {
+    if (!has('skip-index-check')) {
+      const foreign = await findForeignUniqueIndexes();
+      if (foreign.length) {
+        console.error(`\n${explainForeignIndexes(foreign, mongoose.connection.name)}\n`);
+        process.exitCode = 1;
+        return;
+      }
+    }
     if (reset) await resetDemo({ log });
     let content = null;
     if (has('content') || demo) content = await seedContent({ now, log });
