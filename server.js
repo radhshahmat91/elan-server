@@ -6,10 +6,16 @@ import { initSockets } from './sockets/index.js';
 import { startJobs, stopJobs } from './jobs/queue.js';
 import { registerJobFiles } from './jobs/index.js';
 import { logger } from './utils/logger.js';
+import { findForeignUniqueIndexes } from './utils/indexGuard.js';
 
 async function main() {
-  await connectDb();
+  const connection = await connectDb();
   const app = await createApp();
+  findForeignUniqueIndexes()
+    .then((found) => {
+      if (found.length) logger.warn('This database has unique indexes ÉLAN did not create; saving can fail. Use a database of its own.', { db: connection.name, indexes: found });
+    })
+    .catch(() => {});
   const server = http.createServer(app);
   const io = initSockets(server);
   await registerJobFiles();
