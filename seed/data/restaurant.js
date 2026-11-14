@@ -17,11 +17,8 @@ export function restaurantData() {
     key: 'main',
     name: 'ÉLAN',
     tagline: 'Candlelit dinners with Bengali instincts.',
-    taglineBn: 'মোমবাতির আলোয় ডিনার, বাঙালি মেজাজে।',
     description:
       'ÉLAN is a small modern European dining room in Gulshan where the pantry is Bengali: hilsa, mustard, saffron, burnt chilli and the first rice of the season. Everything is cooked to order, for the table, for delivery or for collection.',
-    descriptionBn:
-      'গুলশানের ছোট্ট এই ডাইনিং রুমে রান্না আধুনিক ইউরোপীয়, কিন্তু ভাঁড়ার বাঙালি: ইলিশ, সরিষা, জাফরান, পোড়া মরিচ আর নতুন ধানের চাল। সবকিছু অর্ডার পেলে রান্না হয়, টেবিলের জন্য, ডেলিভারির জন্য কিংবা নিয়ে যাওয়ার জন্য।',
     address: {
       line1: 'House 14, Road 27',
       area: 'Gulshan 1',
@@ -75,10 +72,7 @@ export function restaurantData() {
     chef: {
       name: 'Tahmina Rahman',
       title: 'Head chef',
-      titleBn: 'হেড শেফ',
       bio: 'Tahmina trained in Dhaka and Lyon and cooks the way her grandmother salted fish: early, quietly and without measuring. The menu changes with the river, the market and her mood on Thursday.',
-      bioBn:
-        'তাহমিনা ঢাকা আর লিঁয়ঁতে রান্না শিখেছেন। তিনি রাঁধেন সেভাবেই, যেভাবে তাঁর দিদিমা মাছে নুন মাখাতেন: আগেভাগে, চুপচাপ আর মাপ ছাড়া। নদী, বাজার আর বৃহস্পতিবারের মেজাজ মিলিয়ে মেনু বদলায়।',
     },
   };
 }

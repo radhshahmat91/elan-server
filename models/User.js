@@ -11,7 +11,6 @@ const userSchema = baseSchema(
     status: { type: String, enum: USER_STATUSES, default: 'active', index: true },
     avatarUrl: { type: String, trim: true },
     birthday: { type: Date },
-    locale: { type: String, enum: ['en', 'bn'], default: 'en' },
     marketingOptIn: { type: Boolean, default: false },
     notificationPrefs: {
       orderUpdates: { type: Boolean, default: true },

@@ -109,11 +109,9 @@ export async function seedContent({ now = new Date(), log = () => {} } = {}) {
   // --- menu -----------------------------------------------------------------------------------------------------
   const dishRows = DISHES.map((d, index) => ({
     name: d.name,
-    nameBn: d.nameBn,
     slug: d.slug,
     category: need(categories, d.category, 'category')._id,
     description: d.description,
-    descriptionBn: d.descriptionBn,
     price: d.price,
     salePrice: d.salePrice ?? null,
     images: [],
@@ -123,10 +121,8 @@ export async function seedContent({ now = new Date(), log = () => {} } = {}) {
     allergens: d.allergens,
     spiceLevel: d.spice,
     portion: d.portion,
-    portionBn: d.portionBn,
     calories: d.calories,
     ingredients: d.ingredients,
-    ingredientsBn: d.ingredientsBn,
     prepMinutes: d.prep,
     available: true,
     featured: Boolean(d.featured),

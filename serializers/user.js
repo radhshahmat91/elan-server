@@ -11,7 +11,6 @@ export function serializeUser(user) {
     role: u.role,
     avatarUrl: u.avatarUrl || undefined,
     birthday: dayKey(u.birthday),
-    locale: u.locale ?? 'en',
     marketingOptIn: Boolean(u.marketingOptIn),
     notificationPrefs: {
       orderUpdates: u.notificationPrefs?.orderUpdates !== false,

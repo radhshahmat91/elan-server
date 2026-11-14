@@ -10,7 +10,7 @@ const router = Router();
 
 const LIST_POPULATE = [
   { path: 'optionGroups', select: 'key isRequired minSelect active' },
-  { path: 'category', select: 'name nameBn slug' },
+  { path: 'category', select: 'name slug' },
 ];
 
 const SORTS = {
@@ -58,7 +58,7 @@ router.get('/items', validate({ query: listQuery }), async (req, res) => {
   }
   if (q.q) {
     const re = containsRegex(q.q);
-    filter.$or = [{ name: re }, { nameBn: re }, { description: re }, { ingredients: re }];
+    filter.$or = [{ name: re }, { description: re }, { ingredients: re }];
   }
   if (q.tag) filter.tags = { $all: q.tag.split(',').map((t) => t.trim()).filter(Boolean) };
   if (q.maxPrice != null) filter.price = { $lte: q.maxPrice };
@@ -86,7 +86,7 @@ router.get('/items/featured', async (_req, res) => {
 router.get('/items/:slug', async (req, res) => {
   const item = await MenuItem.findOne({ slug: String(req.params.slug).toLowerCase(), archived: false })
     .populate('optionGroups')
-    .populate('category', 'name nameBn slug')
+    .populate('category', 'name slug')
     .lean();
   if (!item) throw notFound('That dish is not on the menu.');
 
@@ -121,12 +121,12 @@ router.get('/offers', async (_req, res) => {
 
 router.get('/search-suggest', validate({ query: z.object({ q: z.string().trim().min(1).max(60) }) }), async (req, res) => {
   const re = containsRegex(req.valid.query.q);
-  const rows = await MenuItem.find({ archived: false, $or: [{ name: re }, { nameBn: re }] })
+  const rows = await MenuItem.find({ archived: false, $or: [{ name: re }] })
     .sort({ soldCount: -1 })
     .limit(6)
-    .select('name nameBn slug price salePrice art')
+    .select('name slug price salePrice art')
     .lean();
-  ok(res, rows.map((r) => ({ name: r.name, nameBn: r.nameBn || undefined, slug: r.slug, price: r.salePrice ?? r.price, art: r.art?.motif ? { motif: r.art.motif, palette: r.art.palette } : undefined })));
+  ok(res, rows.map((r) => ({ name: r.name, slug: r.slug, price: r.salePrice ?? r.price, art: r.art?.motif ? { motif: r.art.motif, palette: r.art.palette } : undefined })));
 });
 
 export default router;

@@ -21,9 +21,7 @@ export function serializeGalleryItem(g, { admin = false } = {}) {
   return {
     id: String(o._id),
     title: o.title,
-    titleBn: o.titleBn || undefined,
     alt: o.alt,
-    altBn: o.altBn || undefined,
     category: o.category,
     url: o.url || undefined,
     art: artOf(o),
@@ -44,9 +42,7 @@ const imageUrl = z.string().trim().max(500).regex(/^(https:\/\/|\/uploads\/)/, '
 
 const shape = z.object({
   title: z.string().trim().min(2, 'Enter a title').max(80),
-  titleBn: opt(z.string().trim().max(100)),
   alt: z.string().trim().min(4, 'Describe the picture for people who cannot see it').max(200),
-  altBn: opt(z.string().trim().max(240)),
   category: z.enum(GALLERY_CATEGORIES),
   url: opt(imageUrl),
   publicId: opt(z.string().trim().max(200)),
@@ -65,7 +61,7 @@ router.get('/admin', requirePermission('content:read'), async (_req, res) => {
 router.post(
   '/admin',
   requirePermission('content:create'),
-  validate({ body: shape.partial({ titleBn: true, altBn: true, url: true, publicId: true, art: true, sortOrder: true, active: true }).refine(needsPicture, { message: 'Add a photograph or choose a generated picture', path: ['url'] }) }),
+  validate({ body: shape.partial({ url: true, publicId: true, art: true, sortOrder: true, active: true }).refine(needsPicture, { message: 'Add a photograph or choose a generated picture', path: ['url'] }) }),
   async (req, res) => {
     const last = await GalleryItem.findOne({}).sort({ sortOrder: -1 }).select('sortOrder').lean();
     const doc = await GalleryItem.create({ sortOrder: (last?.sortOrder ?? 0) + 1, ...req.valid.body });

@@ -69,7 +69,7 @@ test('every dish points at real categories, option groups and ingredients, with 
     for (const a of d.allergens) assert.ok(ALLERGENS.includes(a), `${d.slug}: unknown allergen ${a}`);
     assert.ok(Number.isInteger(d.price) && d.price > 0, `${d.slug}: price must be whole taka`);
     if (d.salePrice != null) assert.ok(Number.isInteger(d.salePrice) && d.salePrice < d.price, `${d.slug}: sale price must be lower`);
-    for (const field of ['name', 'nameBn', 'description', 'descriptionBn', 'portion', 'portionBn']) assert.ok(String(d[field] ?? '').trim().length > 0, `${d.slug}: ${field} is empty`);
+    for (const field of ['name', 'description', 'portion']) assert.ok(String(d[field] ?? '').trim().length > 0, `${d.slug}: ${field} is empty`);
     assert.ok(d.prep >= 3 && d.prep <= 45);
   }
   assert.equal(DISHES.length, 26);
@@ -85,7 +85,7 @@ test('option groups are well formed', () => {
       assert.ok(g.minSelect >= 1);
       assert.ok(g.choices.some((c) => c.isDefault), `${g.key}: a required group needs a default`);
     }
-    for (const c of g.choices) assert.ok(c.name && c.nameBn && Number.isInteger(c.priceDelta));
+    for (const c of g.choices) assert.ok(c.name && Number.isInteger(c.priceDelta));
   }
 });
 
@@ -99,7 +99,7 @@ test('suppliers, ingredients, tables, FAQ, gallery and coupons have unique keys 
   unique(couponData(NOW), (c) => c.code, 'coupon code');
   const suppliers = new Set(SUPPLIERS.map((s) => s.key));
   for (const i of INGREDIENTS) assert.ok(suppliers.has(i.supplier), `${i.key}: unknown supplier`);
-  for (const f of FAQS) assert.ok(f.question && f.answer && f.questionBn && f.answerBn, 'FAQ entries are bilingual');
+  for (const f of FAQS) assert.ok(f.question && f.answer, 'FAQ entries have a question and an answer');
   assert.ok(TABLES.some((t) => t.section === 'private'));
   assert.ok(INGREDIENTS.some((i) => i.stock <= i.low), 'some stock is deliberately low, so the low-stock alerts have something to show');
 });
@@ -501,7 +501,30 @@ test('chat threads keep their unread counters honest', () => {
     if (c.status === 'closed') assert.equal(c.unreadForStaff + c.unreadForCustomer, 0);
   }
   assert.ok(plan.conversations.some((c) => c.unreadForStaff > 0), 'something waiting for the team');
-  assert.ok(plan.messages.some((m) => /[ঀ-৿]/.test(m.body)), 'a Bengali conversation');
+  assert.ok(plan.messages.some((m) => /allergy/i.test(m.body)), 'an allergy question the kitchen answered');
+});
+
+test('the seed content is English only', () => {
+  // Bengali letters live in the code points 0x0980 to 0x09FF. The taka sign (0x09F3) is in that block too, but it is the currency symbol.
+  const hasBengaliLetters = (text) =>
+    [...text].some((ch) => {
+      const code = ch.codePointAt(0);
+      return code >= 0x0980 && code <= 0x09ff && code !== 0x09f3;
+    });
+  const everything = {
+    CATEGORIES, ADD_ONS, DISHES, INGREDIENTS, SUPPLIERS, FAQS, GALLERY, TABLES,
+    coupons: couponData(), restaurant: restaurantData(),
+    orders: plan.orders, reservations: plan.reservations, reviews: plan.reviews, conversations: plan.conversations, messages: plan.messages,
+    notifications: plan.notifications, audit: plan.audit, contacts: plan.contacts, subscribers: plan.subscribers,
+  };
+  for (const [name, value] of Object.entries(everything)) assert.equal(hasBengaliLetters(JSON.stringify(value ?? null)), false, `${name} contains Bengali script`);
+  const keys = new Set();
+  const walk = (v) => {
+    if (Array.isArray(v)) return v.forEach(walk);
+    if (v && typeof v === 'object') for (const [k, x] of Object.entries(v)) { keys.add(k); walk(x); }
+  };
+  walk(everything);
+  assert.deepEqual([...keys].filter((k) => /Bn$|^bn$|^locale$/.test(k)), [], 'no second-language fields');
 });
 
 test('notifications, audit trail, contact messages, subscribers and the saved cart are sensible', () => {

@@ -14,7 +14,7 @@ import { recomputeItemRating, reviewableFor, serializeReview } from '../services
 export const basePath = '/reviews';
 const router = Router();
 
-const ITEM_POPULATE = { path: 'menuItem', select: 'name nameBn slug' };
+const ITEM_POPULATE = { path: 'menuItem', select: 'name slug' };
 
 // Public ---------------------------------------------------------------------------------------------
 

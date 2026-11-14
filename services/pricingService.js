@@ -78,10 +78,8 @@ export function priceLine(item, line) {
       options.push({
         group: group.key,
         groupName: group.name,
-        groupNameBn: group.nameBn,
         choice: choice.key,
         choiceName: choice.name,
-        choiceNameBn: choice.nameBn,
         priceDelta: choice.priceDelta ?? 0,
       });
     }
@@ -93,7 +91,6 @@ export function priceLine(item, line) {
     menuItem: item._id,
     slug: item.slug,
     name: item.name,
-    nameBn: item.nameBn,
     categoryName: item.category?.name,
     art: item.art?.motif ? { motif: item.art.motif, palette: item.art.palette, seed: item.art.seed } : undefined,
     image: item.images?.[0]?.url,

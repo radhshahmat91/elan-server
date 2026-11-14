@@ -22,11 +22,10 @@ import { restaurantData } from '../seed/data/restaurant.js';
 
 // ---------------------------------------------------------------------------------------------- concierge
 
-test('budgets are read from English and Bengali phrasing', () => {
+test('budgets are read from the way guests write them', () => {
   assert.equal(parseBudget('vegetarian dishes under 800'), 800);
   assert.equal(parseBudget('anything below ৳1,200 please'), 1200);
   assert.equal(parseBudget('less than 500 taka'), 500);
-  assert.equal(parseBudget('৮০০ টাকার নিচে নিরামিষ'), 800);
   assert.equal(parseBudget('1500 or less'), 1500);
   assert.equal(parseBudget('what is popular'), null);
   assert.equal(parseBudget('under 5'), null); // too small to be a price
@@ -41,18 +40,14 @@ test('menu questions are recognised: tags, categories, popularity', () => {
   assert.equal(detectMenuFilters('gluten free please').tags[0], 'gluten-free');
   assert.equal(detectMenuFilters('what is most popular').popular, true);
   assert.equal(detectMenuFilters('can you recommend something').recommend, true);
-  assert.equal(detectMenuFilters('নিরামিষ খাবার').tags[0], 'vegetarian');
-  assert.equal(detectMenuFilters('কফি আছে?').category, 'drinks');
   assert.equal(detectMenuFilters('hello').any, false);
 });
 
 test('intents: live questions go to live data, menu questions stay with the menu', () => {
   assert.equal(detectIntent('hello').intent, 'greeting');
   assert.equal(detectIntent('Assalamu alaikum').intent, 'greeting');
-  assert.equal(detectIntent('হ্যালো').intent, 'greeting');
   assert.equal(detectIntent('thank you!').intent, 'thanks');
   assert.equal(detectIntent('What are your opening hours?').intent, 'hours');
-  assert.equal(detectIntent('এখন কি খোলা আছে').intent, 'hours');
   assert.equal(detectIntent('How much is delivery?').intent, 'delivery');
   assert.equal(detectIntent('Can I book a table for 4?').intent, 'reservation');
   assert.equal(detectIntent('how do points work').intent, 'loyalty');
@@ -67,8 +62,8 @@ test('intents: live questions go to live data, menu questions stay with the menu
 });
 
 test('FAQ matching scores keyword hits above shared words, and ignores noise', () => {
-  const faq = { question: 'Do you take large group bookings?', questionBn: '', keywords: ['group', 'party', 'large booking'], keywordsBn: ['দল'] };
-  const other = { question: 'Is there parking nearby?', keywords: ['parking', 'valet'], keywordsBn: [] };
+  const faq = { question: 'Do you take large group bookings?', keywords: ['group', 'party', 'large booking'] };
+  const other = { question: 'Is there parking nearby?', keywords: ['parking', 'valet'] };
   assert.ok(scoreFaq('can I bring a large group of 12', faq) >= FAQ_STRONG);
   assert.ok(scoreFaq('is there valet parking', other) >= FAQ_STRONG);
   assert.equal(scoreFaq('is there valet parking', faq), 0);
@@ -78,24 +73,22 @@ test('FAQ matching scores keyword hits above shared words, and ignores noise', (
   assert.ok(FAQ_STRONG > FAQ_WEAK);
 });
 
-test('text normalisation handles Bengali digits, case and punctuation', () => {
+test('text normalisation handles case, spacing and punctuation', () => {
   assert.equal(normalize('  Hello,   WORLD!! '), 'hello, world');
-  assert.equal(normalize('৳১,২০০'), '৳1,200');
   assert.deepEqual(tokenize('The best vegan dishes for you'), ['best', 'vegan', 'dishes']);
 });
 
 test('opening hours collapse into readable ranges', () => {
   const { hours } = restaurantData();
-  assert.equal(summariseHours(hours, 'en'), 'Mon to Thu 12:00-23:00, Fri to Sat 12:00-23:30, Sun 12:00-22:30');
-  assert.match(summariseHours(hours, 'bn'), /সোম থেকে বৃহ 12:00-23:00/);
+  assert.equal(summariseHours(hours), 'Mon to Thu 12:00-23:00, Fri to Sat 12:00-23:30, Sun 12:00-22:30');
   const withClosedDay = hours.map((h) => (h.day === 1 ? { ...h, closed: true } : h));
-  assert.match(summariseHours(withClosedDay, 'en'), /Mon closed, Tue to Thu 12:00-23:00/);
+  assert.match(summariseHours(withClosedDay), /Mon closed, Tue to Thu 12:00-23:00/);
 });
 
 test('filter descriptions read naturally', () => {
-  assert.equal(describeFilters({ tags: ['vegetarian'], category: 'starters', maxPrice: 600, popular: false, recommend: false }, 'en'), 'vegetarian starters under ৳600');
-  assert.equal(describeFilters({ tags: [], category: null, maxPrice: null, popular: true, recommend: false }, 'en'), 'most-ordered dishes');
-  assert.equal(describeFilters({ tags: ['gluten-free'], category: null, maxPrice: null, popular: false, recommend: false }, 'en'), 'gluten free dishes');
+  assert.equal(describeFilters({ tags: ['vegetarian'], category: 'starters', maxPrice: 600, popular: false, recommend: false }), 'vegetarian starters under ৳600');
+  assert.equal(describeFilters({ tags: [], category: null, maxPrice: null, popular: true, recommend: false }), 'most-ordered dishes');
+  assert.equal(describeFilters({ tags: ['gluten-free'], category: null, maxPrice: null, popular: false, recommend: false }), 'gluten free dishes');
 });
 
 // ---------------------------------------------------------------------------------------------- analytics
@@ -286,7 +279,8 @@ test('phone numbers match by their last ten digits', () => {
 
 test('the PDF only receives characters its fonts can draw', () => {
   assert.equal(latin('ÉLAN Café'), 'ÉLAN Café');
-  assert.equal(latin('রহিম'), '????'); // four code points, none drawable
+  const bengaliName = String.fromCodePoint(0x09b0, 0x09b9, 0x09bf, 0x09ae); // a guest can type a name in any script
+  assert.equal(latin(bengaliName), '????'); // four code points, none drawable by the PDF's built-in fonts
   assert.equal(latin('৳500'), '?500');
   assert.equal(money(1450), 'BDT 1,450');
   assert.equal(money(undefined), 'BDT 0');

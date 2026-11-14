@@ -53,7 +53,7 @@ export async function publicRestaurant() {
   if (doc.chefsSpecial) {
     const item = await MenuItem.findOne({ _id: doc.chefsSpecial, archived: false })
       .populate('optionGroups')
-      .populate('category', 'name nameBn slug')
+      .populate('category', 'name slug')
       .lean();
     if (item) chefsSpecialItem = serializeMenuItem(item);
   }

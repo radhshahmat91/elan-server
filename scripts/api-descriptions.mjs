@@ -12,7 +12,7 @@ export const DESCRIPTIONS = {
   "POST /api/auth/reset-password": "Set a new password with a reset token. Ends every session of that account.",
   "POST /api/auth/change-password": "Change the password after confirming the current one.",
   // My account
-  "PATCH /api/me": "Update name, phone, birthday, language, marketing and notification preferences.",
+  "PATCH /api/me": "Update name, phone, birthday, marketing and notification preferences.",
   "GET /api/me/loyalty": "Points balance, tier, progress to the next tier and the points ledger.",
   "GET /api/me/addresses": "Saved delivery addresses.",
   "POST /api/me/addresses": "Add a saved address (a limited number per account).",

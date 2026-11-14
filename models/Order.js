@@ -7,10 +7,8 @@ const optionSnapshot = new Schema(
   {
     group: String, // AddOn.key
     groupName: String,
-    groupNameBn: String,
     choice: String, // choice key
     choiceName: String,
-    choiceNameBn: String,
     priceDelta: { type: Number, default: 0 },
   },
   { _id: false },
@@ -21,7 +19,6 @@ const itemSchema = new Schema(
     menuItem: { type: ObjectId, ref: 'MenuItem' },
     slug: String,
     name: { type: String, required: true },
-    nameBn: String,
     categoryName: String,
     art: { motif: String, palette: [String], seed: Number },
     image: String,

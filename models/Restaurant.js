@@ -21,9 +21,7 @@ const restaurantSchema = baseSchema({
   key: { type: String, default: 'main', unique: true },
   name: { type: String, default: 'ÉLAN' },
   tagline: String,
-  taglineBn: String,
   description: String,
-  descriptionBn: String,
   address: {
     line1: String,
     area: String,
@@ -81,7 +79,7 @@ const restaurantSchema = baseSchema({
 
   autoDisableOutOfStock: { type: Boolean, default: false },
 
-  chef: { name: String, title: String, titleBn: String, bio: String, bioBn: String },
+  chef: { name: String, title: String, bio: String },
   chefsSpecial: { type: ObjectId, ref: 'MenuItem' },
 });
 

@@ -18,16 +18,16 @@ const unsubscribeUrl = (token) => `${env.PUBLIC_CLIENT_URL}/unsubscribe?token=${
 // Public ----------------------------------------------------------------------------------------------
 
 // Whether or not the address was already on the list, the answer is the same: it never reveals who is subscribed.
-router.post('/', limiter({ windowMs: 10 * 60_000, limit: 6, message: 'Too many sign-ups from this connection. Please try again later.' }), validate({ body: z.object({ email, locale: z.enum(['en', 'bn']).default('en') }) }), async (req, res) => {
-  const { email: address, locale } = req.valid.body;
+router.post('/', limiter({ windowMs: 10 * 60_000, limit: 6, message: 'Too many sign-ups from this connection. Please try again later.' }), validate({ body: z.object({ email }) }), async (req, res) => {
+  const { email: address } = req.valid.body;
   const existing = await Subscriber.findOne({ email: address });
   if (existing?.status === 'subscribed') return ok(res, { subscribed: true });
 
   let subscriber;
   try {
     subscriber = existing
-      ? await Subscriber.findOneAndUpdate({ _id: existing._id }, { $set: { status: 'subscribed', consent: true, consentAt: new Date(), locale }, $unset: { unsubscribedAt: '' } }, { new: true })
-      : await Subscriber.create({ email: address, consent: true, locale, unsubscribeToken: randomToken(24) });
+      ? await Subscriber.findOneAndUpdate({ _id: existing._id }, { $set: { status: 'subscribed', consent: true, consentAt: new Date() }, $unset: { unsubscribedAt: '' } }, { new: true })
+      : await Subscriber.create({ email: address, consent: true, unsubscribeToken: randomToken(24) });
   } catch (err) {
     if (err?.code === 11000) return ok(res, { subscribed: true }); // two sign-ups raced: either way they are subscribed
     throw err;
@@ -64,13 +64,13 @@ router.get(
     const filter = req.valid.query.status ? { status: req.valid.query.status } : {};
     const { skip, limit, page, pageSize } = parsePagination(req.valid.query, { defaultSize: 30, maxSize: 100 });
     const [rows, total, subscribed] = await Promise.all([Subscriber.find(filter).sort({ createdAt: -1 }).skip(skip).limit(limit).lean(), Subscriber.countDocuments(filter), Subscriber.countDocuments({ status: 'subscribed' })]);
-    ok(res, rows.map((s) => ({ id: String(s._id), email: s.email, status: s.status, locale: s.locale, subscribedAt: s.consentAt, unsubscribedAt: s.unsubscribedAt || undefined })), { ...pageMeta({ page, pageSize }, total), subscribed });
+    ok(res, rows.map((s) => ({ id: String(s._id), email: s.email, status: s.status, subscribedAt: s.consentAt, unsubscribedAt: s.unsubscribedAt || undefined })), { ...pageMeta({ page, pageSize }, total), subscribed });
   },
 );
 
 router.get('/admin/export.csv', requirePermission('content:read'), async (_req, res) => {
   const rows = await Subscriber.find({ status: 'subscribed' }).sort({ createdAt: 1 }).limit(50_000).lean();
-  const body = ['Email,Language,Consent given', ...rows.map((s) => [s.email, s.locale, s.consentAt ? new Date(s.consentAt).toISOString() : ''].map(csvCell).join(','))].join('\r\n');
+  const body = ['Email,Consent given', ...rows.map((s) => [s.email, s.consentAt ? new Date(s.consentAt).toISOString() : ''].map(csvCell).join(','))].join('\r\n');
   res.setHeader('Content-Type', 'text/csv; charset=utf-8');
   res.setHeader('Content-Disposition', 'attachment; filename="elan-subscribers.csv"');
   res.setHeader('Cache-Control', 'private, no-store');

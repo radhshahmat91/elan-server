@@ -27,7 +27,6 @@ const registerBody = z.object({
   password,
   referralCode: z.string().trim().toUpperCase().max(24).optional(),
   marketingOptIn: z.boolean().default(false),
-  locale: z.enum(['en', 'bn']).default('en'),
 });
 const loginBody = z.object({ email, password: z.string().min(1, 'Enter your password').max(128), remember: z.boolean().default(false) });
 
@@ -61,7 +60,6 @@ router.post('/register', limiter({ windowMs: 15 * 60_000, limit: 20, message: 'T
     passwordHash: await hashPassword(input.password),
     marketingOptIn: input.marketingOptIn,
     notificationPrefs: { promotions: input.marketingOptIn },
-    locale: input.locale,
     referredBy,
   });
 
