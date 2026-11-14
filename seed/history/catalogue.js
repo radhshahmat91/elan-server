@@ -3,6 +3,7 @@
 import { restaurantData } from '../data/restaurant.js';
 import { ADD_ONS, CATEGORIES, DISHES, INGREDIENTS, SUPPLIERS } from '../data/menu.js';
 import { TABLES, couponData } from '../data/content.js';
+import { dishImages } from '../data/photos.js';
 import { DEMO_CUSTOMERS, DEMO_STAFF } from '../accounts.js';
 import { DAY, createIdFactory } from './helpers.js';
 
@@ -38,7 +39,7 @@ export function buildCatalogue({ now = new Date(), nextId = createIdFactory() } 
     price: d.price,
     salePrice: d.salePrice ?? null,
     art: { motif: d.motif, seed: d.seed },
-    images: [],
+    images: dishImages(d.slug),
     optionGroups: d.groups.map((key) => addOns.get(key)),
     tags: d.tags,
     prepMinutes: d.prep,
