@@ -34,7 +34,6 @@ export function buildCatalogue({ now = new Date(), nextId = createIdFactory() } 
     _id: nextId(now),
     slug: d.slug,
     name: d.name,
-    nameBn: d.nameBn,
     category: { _id: categories.get(d.category)._id, name: categories.get(d.category).name, slug: d.category },
     price: d.price,
     salePrice: d.salePrice ?? null,
@@ -57,7 +56,6 @@ export function buildCatalogue({ now = new Date(), nextId = createIdFactory() } 
     name: p.name,
     email: p.email,
     phone: p.phone,
-    locale: p.locale,
     createdAt: new Date(now.getTime() - p.joined * DAY),
     profile: p,
   }));

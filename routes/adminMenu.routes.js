@@ -14,16 +14,14 @@ const router = Router();
 
 const text = (max) => z.string().trim().max(max);
 const optText = (max) => z.union([text(max), z.literal('')]).optional();
-const image = z.object({ url: z.string().trim().max(500).refine((u) => /^https?:\/\//.test(u) || u.startsWith('/uploads/'), 'Use an https link or an uploaded image'), alt: optText(200), altBn: optText(240), publicId: optText(120) });
+const image = z.object({ url: z.string().trim().max(500).refine((u) => /^https?:\/\//.test(u) || u.startsWith('/uploads/'), 'Use an https link or an uploaded image'), alt: optText(200), publicId: optText(120) });
 const hex = z.string().regex(/^#[0-9a-f]{6}$/i, 'Use a #rrggbb colour');
 
 const itemShape = z.object({
   name: z.string().trim().min(2).max(90),
-  nameBn: optText(120),
   slug: z.string().trim().toLowerCase().regex(/^[a-z0-9-]+$/, 'Use lowercase letters, numbers and hyphens').max(80).optional(),
   category: objectId,
   description: z.string().trim().min(10).max(500),
-  descriptionBn: optText(700),
   price: z.number().int().min(0).max(100000),
   salePrice: z.number().int().min(0).max(100000).nullable().optional(),
   images: z.array(image).max(6),
@@ -33,10 +31,8 @@ const itemShape = z.object({
   allergens: z.array(z.enum(ALLERGENS)).max(10),
   spiceLevel: z.number().int().min(0).max(3),
   portion: optText(60),
-  portionBn: optText(80),
   calories: z.number().int().min(0).max(5000).nullable().optional(),
   ingredients: z.array(text(60)).max(30),
-  ingredientsBn: z.array(text(80)).max(30),
   prepMinutes: z.number().int().min(1).max(180),
   available: z.boolean(),
   featured: z.boolean(),
@@ -48,11 +44,11 @@ const itemShape = z.object({
 const saleOk = (v) => v.salePrice == null || v.price == null || v.salePrice <= v.price;
 const SALE_MESSAGE = { message: 'The sale price cannot be higher than the regular price', path: ['salePrice'] };
 const createItem = itemShape
-  .partial({ nameBn: true, descriptionBn: true, salePrice: true, images: true, art: true, optionGroups: true, tags: true, allergens: true, spiceLevel: true, portion: true, portionBn: true, calories: true, ingredients: true, ingredientsBn: true, prepMinutes: true, available: true, featured: true, newArrival: true, sortOrder: true, sku: true, recipe: true, slug: true })
+  .partial({ salePrice: true, images: true, art: true, optionGroups: true, tags: true, allergens: true, spiceLevel: true, portion: true, calories: true, ingredients: true, prepMinutes: true, available: true, featured: true, newArrival: true, sortOrder: true, sku: true, recipe: true, slug: true })
   .refine(saleOk, SALE_MESSAGE);
 const updateItem = itemShape.partial().refine(saleOk, SALE_MESSAGE);
 
-const ITEM_POPULATE = [{ path: 'optionGroups' }, { path: 'category', select: 'name nameBn slug' }, { path: 'recipe.ingredient', select: 'name' }];
+const ITEM_POPULATE = [{ path: 'optionGroups' }, { path: 'category', select: 'name slug' }, { path: 'recipe.ingredient', select: 'name' }];
 
 async function uniqueSlug(base, ignoreId) {
   const root = slugify(base) || 'dish';
@@ -66,8 +62,8 @@ async function uniqueSlug(base, ignoreId) {
 
 const cleanItem = (input) => {
   const out = { ...input };
-  for (const key of ['nameBn', 'descriptionBn', 'portion', 'portionBn', 'sku']) if (out[key] === '') out[key] = undefined;
-  if (out.images) out.images = out.images.map((i) => ({ ...i, alt: i.alt || undefined, altBn: i.altBn || undefined, publicId: i.publicId || undefined }));
+  for (const key of ['portion', 'sku']) if (out[key] === '') out[key] = undefined;
+  if (out.images) out.images = out.images.map((i) => ({ ...i, alt: i.alt || undefined, publicId: i.publicId || undefined }));
   return out;
 };
 
@@ -86,7 +82,7 @@ router.get('/items', requirePermission('menu:read'), validate({ query: listQuery
   const filter = {};
   if (q.q) {
     const re = containsRegex(q.q);
-    filter.$or = [{ name: re }, { nameBn: re }, { sku: re }];
+    filter.$or = [{ name: re }, { sku: re }];
   }
   if (q.category) filter.category = q.category;
   if (q.status === 'archived') filter.archived = true;
@@ -168,10 +164,8 @@ router.post('/items/:id/restore', requirePermission('menu:update'), validate({ p
 
 const categoryShape = z.object({
   name: z.string().trim().min(2).max(60),
-  nameBn: optText(80),
   slug: z.string().trim().toLowerCase().regex(/^[a-z0-9-]+$/).max(60).optional(),
   description: optText(300),
-  descriptionBn: optText(400),
   sortOrder: z.number().int().min(-1000).max(1000),
   active: z.boolean(),
   art: z.object({ motif: z.enum(ART_MOTIFS).optional(), palette: z.array(hex).max(6).optional() }).optional(),
@@ -186,11 +180,11 @@ router.get('/categories', requirePermission('menu:read'), async (_req, res) => {
   ok(res, cats.map((c) => ({ ...serializeCategory(c, countOf.get(String(c._id)) ?? 0), active: c.active })));
 });
 
-router.post('/categories', requirePermission('menu:create'), validate({ body: categoryShape.partial({ nameBn: true, slug: true, description: true, descriptionBn: true, sortOrder: true, active: true, art: true }) }), async (req, res) => {
+router.post('/categories', requirePermission('menu:create'), validate({ body: categoryShape.partial({ slug: true, description: true, sortOrder: true, active: true, art: true }) }), async (req, res) => {
   const input = req.valid.body;
   let slug = slugify(input.slug || input.name);
   if (await Category.exists({ slug })) slug = `${slug}-${Date.now().toString(36).slice(-4)}`;
-  const doc = await Category.create({ ...input, slug, nameBn: input.nameBn || undefined, description: input.description || undefined, descriptionBn: input.descriptionBn || undefined });
+  const doc = await Category.create({ ...input, slug, description: input.description || undefined });
   await audit(req, 'category.create', { type: 'category', id: doc._id }, `Created category ${doc.name}`);
   created(res, serializeCategory(doc.toObject(), 0));
 });
@@ -217,7 +211,6 @@ router.delete('/categories/:id', requirePermission('menu:delete'), validate({ pa
 const choice = z.object({
   key: z.string().trim().toLowerCase().regex(/^[a-z0-9-]+$/, 'Use lowercase letters, numbers and hyphens').max(40),
   name: z.string().trim().min(1).max(80),
-  nameBn: optText(100),
   priceDelta: z.number().int().min(-10000).max(10000),
   isDefault: z.boolean(),
   available: z.boolean(),
@@ -225,9 +218,7 @@ const choice = z.object({
 const groupShape = z.object({
   key: z.string().trim().toLowerCase().regex(/^[a-z0-9-]+$/, 'Use lowercase letters, numbers and hyphens').min(2).max(40),
   name: z.string().trim().min(2).max(80),
-  nameBn: optText(100),
   helper: optText(160),
-  helperBn: optText(200),
   isRequired: z.boolean(),
   minSelect: z.number().int().min(0).max(10),
   maxSelect: z.number().int().min(1).max(10),
@@ -246,7 +237,7 @@ router.get('/addons', requirePermission('menu:read'), async (_req, res) => {
   ok(res, groups.map((g) => ({ ...serializeOptionGroup(g), active: g.active, usedBy: used.get(String(g._id)) ?? 0 })));
 });
 
-router.post('/addons', requirePermission('menu:create'), validate({ body: groupShape.partial({ nameBn: true, helper: true, helperBn: true, isRequired: true, minSelect: true, maxSelect: true, active: true }).refine(groupOk, GROUP_MESSAGE) }), async (req, res) => {
+router.post('/addons', requirePermission('menu:create'), validate({ body: groupShape.partial({ helper: true, isRequired: true, minSelect: true, maxSelect: true, active: true }).refine(groupOk, GROUP_MESSAGE) }), async (req, res) => {
   const input = req.valid.body;
   if (await AddOn.exists({ key: input.key })) throw conflict('An option group with that key already exists.', 'KEY_TAKEN');
   const doc = await AddOn.create({ ...input, minSelect: input.minSelect ?? (input.isRequired ? 1 : 0), maxSelect: input.maxSelect ?? 1 });

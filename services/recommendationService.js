@@ -5,7 +5,7 @@ import { serializeMenuItem } from '../serializers/menu.js';
 
 const LIST_POPULATE = [
   { path: 'optionGroups', select: 'key isRequired minSelect active' },
-  { path: 'category', select: 'name nameBn slug' },
+  { path: 'category', select: 'name slug' },
 ];
 
 const live = { archived: false, available: true };

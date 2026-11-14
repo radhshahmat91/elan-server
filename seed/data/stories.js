@@ -130,12 +130,12 @@ export const CHATS = [
     ],
   },
   {
-    key: 'allergy', customer: 'nusrat', subject: 'অ্যালার্জি নিয়ে প্রশ্ন', status: 'closed', assignedTo: 'manager', startedMinutesAgo: 60 * 30, isLastFromCustomer: false,
+    key: 'allergy', customer: 'nusrat', subject: 'A question about nuts', status: 'closed', assignedTo: 'manager', startedMinutesAgo: 60 * 30, isLastFromCustomer: false,
     lines: [
-      { from: 'customer', after: 0, body: 'ইলিশ ভাপায় কি বাদাম আছে? আমার মেয়ের বাদামে অ্যালার্জি।' },
+      { from: 'customer', after: 0, body: 'Is there any nut in the steamed hilsa? My daughter has a nut allergy.' },
       { from: 'bot', after: 0, body: 'ACK' },
-      { from: 'staff', after: 9, body: 'না, ইলিশ ভাপায় বাদাম নেই। তবে আমাদের রান্নাঘর একটাই, তাই সামান্য মিশে যাওয়ার সম্ভাবনা একেবারে বাদ দিতে পারি না। অর্ডারের নোটে লিখে দিলে শেফ আলাদা সতর্কতা নেবেন।' },
-      { from: 'customer', after: 12, body: 'ধন্যবাদ, তাহলে নোটে লিখেই অর্ডার করছি।' },
+      { from: 'staff', after: 9, body: 'No, the steamed hilsa has no nuts in it. We do cook in a single kitchen, though, so I cannot rule out a trace entirely. If you put the allergy in the order note, the chef will take extra care.' },
+      { from: 'customer', after: 12, body: 'Thank you, I will put it in the note and order.' },
     ],
   },
   {

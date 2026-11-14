@@ -42,7 +42,6 @@ export async function seedAdmin({ email = env.ADMIN_EMAIL, password = env.ADMIN_
     passwordHash: await hashPassword(password),
     role: 'owner',
     status: 'active',
-    locale: 'en',
     referralCode: `ELAN-${rand.code(REFERRAL_ALPHABET, 6)}`,
     isDemo: false,
   });
@@ -65,39 +64,39 @@ export const DEMO_STAFF = [
 // weight: how often this guest orders. joined: days before the seed run that the account was created.
 export const DEMO_CUSTOMERS = [
   {
-    key: 'rahim', name: 'Rahim Uddin', email: 'rahim@elan.demo', phone: '+8801710000011', locale: 'en', weight: 6, joined: 80, marketing: true,
+    key: 'rahim', name: 'Rahim Uddin', email: 'rahim@elan.demo', phone: '+8801710000011', weight: 6, joined: 80, marketing: true,
     addresses: [
       { label: 'Home', line1: 'House 21, Road 11', area: 'Gulshan', postcode: '1212', notes: 'Ring the bell twice. Guard has a spare key.' },
       { label: 'Office', line1: 'Level 5, Navana Tower, 45 Kemal Ataturk Avenue', area: 'Banani', postcode: '1213' },
     ],
   },
   {
-    key: 'nusrat', name: 'Nusrat Jahan', email: 'nusrat@elan.demo', phone: '+8801710000012', locale: 'bn', weight: 5, joined: 70, marketing: true,
+    key: 'nusrat', name: 'Nusrat Jahan', email: 'nusrat@elan.demo', phone: '+8801710000012', weight: 5, joined: 70, marketing: true,
     addresses: [{ label: 'Home', line1: 'Flat 6B, House 8, Road 3', area: 'Dhanmondi', postcode: '1205', notes: 'Lift is on the left of the lobby.' }],
   },
   {
-    key: 'farhan', name: 'Farhan Ahmed', email: 'farhan@elan.demo', phone: '+8801710000013', locale: 'en', weight: 4, joined: 62, marketing: false,
+    key: 'farhan', name: 'Farhan Ahmed', email: 'farhan@elan.demo', phone: '+8801710000013', weight: 4, joined: 62, marketing: false,
     addresses: [{ label: 'Home', line1: 'House 40, Road 2, Sector 4', area: 'Uttara', postcode: '1230' }],
   },
   {
-    key: 'tasnim', name: 'Tasnim Chowdhury', email: 'tasnim@elan.demo', phone: '+8801710000014', locale: 'en', weight: 3, joined: 52, marketing: true, referredBy: 'rahim',
+    key: 'tasnim', name: 'Tasnim Chowdhury', email: 'tasnim@elan.demo', phone: '+8801710000014', weight: 3, joined: 52, marketing: true, referredBy: 'rahim',
     addresses: [{ label: 'Home', line1: 'House 12, Road 17', area: 'Baridhara', postcode: '1212' }],
   },
   {
-    key: 'mehedi', name: 'Mehedi Hasan', email: 'mehedi@elan.demo', phone: '+8801710000015', locale: 'bn', weight: 3, joined: 40, marketing: false,
+    key: 'mehedi', name: 'Mehedi Hasan', email: 'mehedi@elan.demo', phone: '+8801710000015', weight: 3, joined: 40, marketing: false,
     addresses: [{ label: 'Home', line1: 'Flat 3A, Block C, Road 9', area: 'Bashundhara R/A', postcode: '1229' }],
   },
   {
-    key: 'sadia', name: 'Sadia Islam', email: 'sadia@elan.demo', phone: '+8801710000016', locale: 'en', weight: 3, joined: 33, marketing: true,
+    key: 'sadia', name: 'Sadia Islam', email: 'sadia@elan.demo', phone: '+8801710000016', weight: 3, joined: 33, marketing: true,
     addresses: [{ label: 'Home', line1: 'House 7, Road 5', area: 'Niketan', postcode: '1212' }],
   },
   {
-    key: 'imtiaz', name: 'Imtiaz Karim', email: 'imtiaz@elan.demo', phone: '+8801710000017', locale: 'en', weight: 2, joined: 21, marketing: false,
+    key: 'imtiaz', name: 'Imtiaz Karim', email: 'imtiaz@elan.demo', phone: '+8801710000017', weight: 2, joined: 21, marketing: false,
     addresses: [{ label: 'Home', line1: 'Flat 9C, Mohakhali DOHS', area: 'Mohakhali', postcode: '1206' }],
   },
   // Joined a few days ago and has not ordered yet: shows the first-order offer working.
   {
-    key: 'maliha', name: 'Maliha Sultana', email: 'maliha@elan.demo', phone: '+8801710000018', locale: 'en', weight: 0, joined: 3, marketing: true,
+    key: 'maliha', name: 'Maliha Sultana', email: 'maliha@elan.demo', phone: '+8801710000018', weight: 0, joined: 3, marketing: true,
     addresses: [{ label: 'Home', line1: 'House 33, Road 14', area: 'Gulshan', postcode: '1212' }],
   },
 ];
@@ -124,7 +123,6 @@ export async function seedDemoAccounts({ now = new Date(), log = () => {} } = {}
         passwordHash,
         role: p.role ?? 'customer',
         status: 'active',
-        locale: p.locale ?? 'en',
         marketingOptIn: Boolean(p.marketing),
         notificationPrefs: { orderUpdates: true, reservationUpdates: true, promotions: Boolean(p.marketing) },
         referralCode: `ELAN-${rand.code(REFERRAL_ALPHABET, 6)}`,

@@ -37,11 +37,9 @@ async function describeCart(lines) {
       note: line.note || undefined,
       snap: {
         name: item.name,
-        nameBn: item.nameBn || undefined,
         slug: item.slug,
         unitPrice: priced.unitPrice,
         optionNames: priced.options.map((o) => o.choiceName),
-        optionNamesBn: priced.options.map((o) => o.choiceNameBn || o.choiceName),
         art: item.art?.motif ? { motif: item.art.motif, palette: item.art.palette, seed: item.art.seed } : undefined,
         image: item.images?.[0]?.url,
       },
@@ -79,7 +77,7 @@ router.post('/quote', limiter({ windowMs: 60_000, limit: 90 }), validate({ body:
   ok(res, {
     ok: quote.ok,
     fulfillment: quote.fulfillment,
-    lines: quote.lines.map((l) => ({ menuItemId: String(l.menuItem), name: l.name, nameBn: l.nameBn, quantity: l.quantity, unitPrice: l.unitPrice, lineTotal: l.lineTotal, options: l.options.map((o) => ({ groupName: o.groupName, choiceName: o.choiceName, choiceNameBn: o.choiceNameBn, priceDelta: o.priceDelta })) })),
+    lines: quote.lines.map((l) => ({ menuItemId: String(l.menuItem), name: l.name, quantity: l.quantity, unitPrice: l.unitPrice, lineTotal: l.lineTotal, options: l.options.map((o) => ({ groupName: o.groupName, choiceName: o.choiceName, priceDelta: o.priceDelta })) })),
     totals: quote.totals,
     coupon: quote.coupon ? { code: quote.coupon.code, description: quote.coupon.description, discount: quote.coupon.discount, freeDelivery: quote.coupon.freeDelivery } : null,
     loyalty: quote.loyalty,

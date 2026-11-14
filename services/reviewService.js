@@ -21,7 +21,7 @@ export async function recomputeItemRating(menuItemId) {
 
 export function serializeReview(r, { admin = false } = {}) {
   const o = typeof r.toObject === 'function' ? r.toObject() : r;
-  const item = o.menuItem && typeof o.menuItem === 'object' && o.menuItem.name ? { id: String(o.menuItem._id), name: o.menuItem.name, nameBn: o.menuItem.nameBn || undefined, slug: o.menuItem.slug } : null;
+  const item = o.menuItem && typeof o.menuItem === 'object' && o.menuItem.name ? { id: String(o.menuItem._id), name: o.menuItem.name, slug: o.menuItem.slug } : null;
   return {
     id: String(o._id),
     rating: o.rating,
@@ -59,7 +59,7 @@ export async function reviewableFor(userId) {
         orderId: String(order._id),
         orderNumber: order.orderNumber,
         deliveredAt: order.deliveredAt,
-        menuItem: { id: String(line.menuItem), name: line.name, nameBn: line.nameBn || undefined, slug: line.slug, art: line.art?.motif ? { motif: line.art.motif, palette: line.art.palette, seed: line.art.seed } : undefined, image: line.image },
+        menuItem: { id: String(line.menuItem), name: line.name, slug: line.slug, art: line.art?.motif ? { motif: line.art.motif, palette: line.art.palette, seed: line.art.seed } : undefined, image: line.image },
       });
     }
   }

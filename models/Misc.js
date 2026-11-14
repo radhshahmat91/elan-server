@@ -23,7 +23,6 @@ const subscriberSchema = baseSchema({
   status: { type: String, enum: ['subscribed', 'unsubscribed'], default: 'subscribed' },
   consent: { type: Boolean, required: true },
   consentAt: { type: Date, default: Date.now },
-  locale: { type: String, enum: ['en', 'bn'], default: 'en' },
   unsubscribeToken: { type: String, required: true, unique: true },
   unsubscribedAt: Date,
   isDemo: { type: Boolean, default: false },
@@ -48,11 +47,8 @@ export const ContactMessage = defineModel('ContactMessage', contactSchema);
 const faqSchema = baseSchema({
   category: { type: String, default: 'general' },
   question: { type: String, required: true, maxlength: 200 },
-  questionBn: { type: String, maxlength: 260 },
   answer: { type: String, required: true, maxlength: 800 },
-  answerBn: { type: String, maxlength: 1000 },
   keywords: [{ type: String }],
-  keywordsBn: [{ type: String }],
   sortOrder: { type: Number, default: 0 },
   active: { type: Boolean, default: true },
 });
@@ -61,9 +57,7 @@ export const Faq = defineModel('Faq', faqSchema);
 // Gallery tiles: either a photograph URL or generative art ('art' is rendered by the client).
 const gallerySchema = baseSchema({
   title: { type: String, required: true, maxlength: 80 },
-  titleBn: { type: String, maxlength: 100 },
   alt: { type: String, required: true, maxlength: 200 },
-  altBn: { type: String, maxlength: 240 },
   category: { type: String, enum: GALLERY_CATEGORIES, required: true, index: true },
   url: { type: String },
   publicId: { type: String },

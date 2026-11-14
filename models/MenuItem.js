@@ -5,7 +5,6 @@ const imageSchema = new Schema(
   {
     url: { type: String, required: true },
     alt: { type: String, maxlength: 200 },
-    altBn: { type: String, maxlength: 240 },
     publicId: String, // Cloudinary id when uploaded through the admin
   },
   { _id: false },
@@ -28,14 +27,10 @@ const recipeSchema = new Schema(
 
 const menuItemSchema = baseSchema({
   name: { type: String, required: true, trim: true, maxlength: 90 },
-  nameBn: { type: String, trim: true, maxlength: 120 },
   slug: { type: String, required: true, unique: true, lowercase: true, trim: true },
   sku: { type: String, unique: true, sparse: true, trim: true },
   category: { type: ObjectId, ref: 'Category', required: true, index: true },
   description: { type: String, required: true, maxlength: 500 },
-  descriptionBn: { type: String, maxlength: 700 },
-
-  // Money is stored as whole BDT (integers).
   price: { type: Number, required: true, min: 0 },
   salePrice: { type: Number, min: 0, default: null },
 
@@ -48,10 +43,8 @@ const menuItemSchema = baseSchema({
   allergens: [{ type: String, enum: ALLERGENS }], // only verified claims
   spiceLevel: { type: Number, min: 0, max: 3, default: 0 },
   portion: { type: String, maxlength: 60 },
-  portionBn: { type: String, maxlength: 80 },
   calories: { type: Number, min: 0 },
   ingredients: [String],
-  ingredientsBn: [String],
   prepMinutes: { type: Number, default: 15, min: 1 },
 
   available: { type: Boolean, default: true },

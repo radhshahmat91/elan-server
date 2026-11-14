@@ -6,10 +6,7 @@ import {
 } from '../data/stories.js';
 import { ALNUM, DAY, HOUR, LOWER, MIN, UPPER, addMinutes } from './helpers.js';
 
-const BOT_ACK = {
-  en: 'Thank you, we have your message. A member of the team will reply here as soon as they can, usually within a few minutes while we are open.',
-  bn: 'ধন্যবাদ, আপনার বার্তা পেয়েছি। আমাদের একজন সদস্য যত দ্রুত সম্ভব এখানেই উত্তর দেবেন, খোলা থাকলে সাধারণত কয়েক মিনিটের মধ্যে।',
-};
+const BOT_ACK = 'Thank you, we have your message. A member of the team will reply here as soon as they can, usually within a few minutes while we are open.';
 
 const unique = (set, make) => {
   for (let i = 0; i < 50; i += 1) {
@@ -200,7 +197,7 @@ export function generateChats({ now, nextId, customers, staff }) {
       const base = { _id: nextId(at), conversation: conversationId, createdAt: at, updatedAt: at };
       if (line.from === 'customer') built.push({ ...base, sender: customer._id, senderRole: 'customer', senderName: customer.name, body: line.body });
       else if (line.from === 'staff') built.push({ ...base, sender: staff.manager._id, senderRole: 'staff', senderName: staff.manager.name, body: line.body });
-      else built.push({ ...base, sender: null, senderRole: 'bot', senderName: 'ÉLAN', body: BOT_ACK[customer.locale === 'bn' ? 'bn' : 'en'] });
+      else built.push({ ...base, sender: null, senderRole: 'bot', senderName: 'ÉLAN', body: BOT_ACK });
     }
     const last = built[built.length - 1];
     const open = chat.status === 'open';
@@ -289,7 +286,7 @@ export function generateSubscribers({ now, rand, nextId }) {
     const createdAt = new Date(now.getTime() - (3 + index * 3) * DAY);
     const gone = index === 4 || index === 9;
     return {
-      _id: nextId(createdAt), email: `${name}@elan.demo`, status: gone ? 'unsubscribed' : 'subscribed', consent: true, consentAt: createdAt, locale: index % 4 === 3 ? 'bn' : 'en',
+      _id: nextId(createdAt), email: `${name}@elan.demo`, status: gone ? 'unsubscribed' : 'subscribed', consent: true, consentAt: createdAt,
       unsubscribeToken: rand.code(ALNUM, 32), unsubscribedAt: gone ? new Date(createdAt.getTime() + 6 * DAY) : undefined, isDemo: true, createdAt, updatedAt: createdAt,
     };
   });

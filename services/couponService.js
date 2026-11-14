@@ -75,7 +75,6 @@ export function evaluateCouponRules(coupon, ctx, now = new Date()) {
       id: String(coupon._id ?? ''),
       code: coupon.code,
       description: coupon.description,
-      descriptionBn: coupon.descriptionBn,
       type: coupon.type,
       value: coupon.value,
     },

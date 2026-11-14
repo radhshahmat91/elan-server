@@ -15,10 +15,7 @@ const router = Router();
 
 const text = z.string().trim().min(1, 'Write a message').max(1500);
 
-const BOT_ACK = {
-  en: 'Thank you, we have your message. A member of the team will reply here as soon as they can, usually within a few minutes while we are open.',
-  bn: 'ধন্যবাদ, আপনার বার্তা পেয়েছি। আমাদের একজন সদস্য যত দ্রুত সম্ভব এখানেই উত্তর দেবেন, খোলা থাকলে সাধারণত কয়েক মিনিটের মধ্যে।',
-};
+const BOT_ACK = 'Thank you, we have your message. A member of the team will reply here as soon as they can, usually within a few minutes while we are open.';
 
 export function serializeMessage(m) {
   const o = typeof m.toObject === 'function' ? m.toObject() : m;
@@ -86,7 +83,7 @@ router.post('/messages', requireAuth, limiter({ windowMs: 60_000, limit: 20, mes
   }
   const replies = [sent.message];
   if (isNew) {
-    const ack = await postMessage({ conversation, sender: null, senderRole: 'bot', senderName: 'ÉLAN', body: BOT_ACK[req.user.locale === 'bn' ? 'bn' : 'en'] });
+    const ack = await postMessage({ conversation, sender: null, senderRole: 'bot', senderName: 'ÉLAN', body: BOT_ACK });
     replies.push(ack.message);
   }
   created(res, { conversationId: String(conversation._id), messages: replies });

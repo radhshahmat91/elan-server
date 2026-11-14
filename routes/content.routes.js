@@ -19,11 +19,8 @@ export function serializeFaq(f) {
     id: String(o._id),
     category: o.category,
     question: o.question,
-    questionBn: o.questionBn || undefined,
     answer: o.answer,
-    answerBn: o.answerBn || undefined,
     keywords: o.keywords ?? [],
-    keywordsBn: o.keywordsBn ?? [],
     sortOrder: o.sortOrder ?? 0,
     active: o.active !== false,
   };
@@ -32,11 +29,8 @@ export function serializeFaq(f) {
 const shape = z.object({
   category: z.string().trim().min(2).max(30),
   question: z.string().trim().min(5, 'Write the question').max(200),
-  questionBn: opt(z.string().trim().max(260)),
   answer: z.string().trim().min(5, 'Write the answer').max(800),
-  answerBn: opt(z.string().trim().max(1000)),
   keywords,
-  keywordsBn: keywords,
   sortOrder: z.number().int().min(0).max(10_000),
   active: z.boolean(),
 });
@@ -46,7 +40,7 @@ router.get('/faqs', requirePermission('content:read'), async (_req, res) => {
   ok(res, rows.map(serializeFaq));
 });
 
-router.post('/faqs', requirePermission('content:create'), validate({ body: shape.partial({ category: true, questionBn: true, answerBn: true, keywords: true, keywordsBn: true, sortOrder: true, active: true }) }), async (req, res) => {
+router.post('/faqs', requirePermission('content:create'), validate({ body: shape.partial({ category: true, keywords: true, sortOrder: true, active: true }) }), async (req, res) => {
   const doc = await Faq.create({ category: 'general', ...req.valid.body });
   await audit(req, 'faq.create', { type: 'faq', id: doc._id }, `Added FAQ: ${doc.question}`);
   created(res, serializeFaq(doc));

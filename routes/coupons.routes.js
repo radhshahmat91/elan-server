@@ -33,7 +33,6 @@ const text = (max) => z.union([z.string().trim().max(max), z.literal('')]).optio
 const shape = z.object({
   code: z.string().trim().toUpperCase().regex(/^[A-Z0-9-]{3,24}$/, 'Use 3 to 24 letters, numbers or hyphens'),
   description: text(200),
-  descriptionBn: text(260),
   type: z.enum(COUPON_TYPES),
   value: z.number().min(0).max(100000),
   maxDiscount: z.number().int().min(0).max(100000).nullable().optional(),
@@ -47,20 +46,17 @@ const shape = z.object({
   active: z.boolean(),
   showOnSite: z.boolean(),
   headline: text(80),
-  headlineBn: text(120),
   terms: text(300),
-  termsBn: text(400),
 });
 const rules = (c) => (c.type !== 'percent' || c.value == null || (c.value >= 1 && c.value <= 100)) && (!c.startsAt || !c.expiresAt || new Date(c.startsAt) < new Date(c.expiresAt));
 const RULE_MESSAGE = { message: 'Percent codes take 1 to 100, and the start must come before the end', path: ['value'] };
-const create = shape.partial({ description: true, descriptionBn: true, maxDiscount: true, minOrder: true, startsAt: true, expiresAt: true, usageLimit: true, perUserLimit: true, firstOrderOnly: true, appliesTo: true, active: true, showOnSite: true, headline: true, headlineBn: true, terms: true, termsBn: true }).refine(rules, RULE_MESSAGE);
+const create = shape.partial({ description: true, maxDiscount: true, minOrder: true, startsAt: true, expiresAt: true, usageLimit: true, perUserLimit: true, firstOrderOnly: true, appliesTo: true, active: true, showOnSite: true, headline: true, terms: true }).refine(rules, RULE_MESSAGE);
 const update = shape.partial().refine(rules, RULE_MESSAGE);
 
 const dto = (c) => ({
   id: String(c._id),
   code: c.code,
   description: c.description || undefined,
-  descriptionBn: c.descriptionBn || undefined,
   type: c.type,
   value: c.value,
   maxDiscount: c.maxDiscount ?? null,
@@ -75,15 +71,13 @@ const dto = (c) => ({
   active: Boolean(c.active),
   showOnSite: Boolean(c.showOnSite),
   headline: c.headline || undefined,
-  headlineBn: c.headlineBn || undefined,
   terms: c.terms || undefined,
-  termsBn: c.termsBn || undefined,
   createdAt: c.createdAt,
 });
 
 const clean = (input) => {
   const out = { ...input };
-  for (const key of ['description', 'descriptionBn', 'headline', 'headlineBn', 'terms', 'termsBn']) if (out[key] === '') out[key] = undefined;
+  for (const key of ['description', 'headline', 'terms']) if (out[key] === '') out[key] = undefined;
   if (out.startsAt) out.startsAt = new Date(out.startsAt);
   if (out.expiresAt) out.expiresAt = new Date(out.expiresAt);
   if (out.type === 'free_delivery') out.value = 0;

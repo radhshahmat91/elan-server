@@ -10,9 +10,9 @@ const router = Router();
 router.post(
   '/',
   limiter({ windowMs: 60_000, limit: 30, message: 'You are asking very quickly. Please give it a moment.' }),
-  validate({ body: z.object({ message: z.string().trim().min(1, 'Type a question').max(300), locale: z.enum(['en', 'bn']).default('en') }) }),
+  validate({ body: z.object({ message: z.string().trim().min(1, 'Type a question').max(300) }) }),
   async (req, res) => {
-    ok(res, await answer(req.valid.body.message, req.valid.body.locale));
+    ok(res, await answer(req.valid.body.message));
   },
 );
 

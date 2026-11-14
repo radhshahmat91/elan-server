@@ -28,7 +28,6 @@ const profileBody = z
     name: z.string().trim().min(2, 'Enter your name').max(80),
     phone: blank(phone).nullable(),
     birthday: blank(dateKey).nullable(),
-    locale: z.enum(['en', 'bn']),
     marketingOptIn: z.boolean(),
     avatarUrl: blank(z.string().trim().max(500)).nullable(),
     notificationPrefs: z.object({ orderUpdates: z.boolean(), reservationUpdates: z.boolean(), promotions: z.boolean() }).partial(),
@@ -39,7 +38,7 @@ router.patch('/', validate({ body: profileBody }), async (req, res) => {
   const input = req.valid.body;
   const set = {};
   const unset = {};
-  for (const key of ['name', 'locale', 'marketingOptIn']) if (input[key] !== undefined) set[key] = input[key];
+  for (const key of ['name', 'marketingOptIn']) if (input[key] !== undefined) set[key] = input[key];
   for (const key of ['phone', 'avatarUrl']) {
     if (input[key] === undefined) continue;
     if (input[key] === '' || input[key] === null) unset[key] = '';
@@ -112,7 +111,7 @@ router.get('/favorites', async (req, res) => {
   const ids = (user?.favorites ?? []).map(String);
   const rows = ids.length
     ? await MenuItem.find({ _id: { $in: ids }, archived: false })
-        .populate([{ path: 'optionGroups', select: 'key isRequired minSelect active' }, { path: 'category', select: 'name nameBn slug' }])
+        .populate([{ path: 'optionGroups', select: 'key isRequired minSelect active' }, { path: 'category', select: 'name slug' }])
         .lean()
     : [];
   ok(res, { ids, items: rows.map((r) => serializeMenuItem(r)) });

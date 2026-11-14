@@ -11,7 +11,6 @@ function serializeItem(i) {
     menuItemId: i.menuItem ? String(i.menuItem) : undefined,
     slug: i.slug,
     name: i.name,
-    nameBn: i.nameBn || undefined,
     art: i.art?.motif ? { motif: i.art.motif, palette: i.art.palette, seed: i.art.seed } : undefined,
     image: i.image || undefined,
     quantity: i.quantity,
@@ -21,10 +20,8 @@ function serializeItem(i) {
     options: (i.options ?? []).map((o) => ({
       group: o.group,
       groupName: o.groupName,
-      groupNameBn: o.groupNameBn || undefined,
       choice: o.choice,
       choiceName: o.choiceName,
-      choiceNameBn: o.choiceNameBn || undefined,
       priceDelta: o.priceDelta ?? 0,
     })),
   };

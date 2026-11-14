@@ -9,7 +9,6 @@ const redemptionSchema = new Schema(
 const couponSchema = baseSchema({
   code: { type: String, required: true, unique: true, uppercase: true, trim: true, maxlength: 24 },
   description: { type: String, maxlength: 200 },
-  descriptionBn: { type: String, maxlength: 260 },
   type: { type: String, enum: COUPON_TYPES, required: true },
   value: { type: Number, default: 0, min: 0 }, // percent (0-100) or whole BDT; ignored for free_delivery
   maxDiscount: { type: Number, default: null }, // cap for percent coupons
@@ -26,10 +25,7 @@ const couponSchema = baseSchema({
   // Special-offers section on the homepage.
   showOnSite: { type: Boolean, default: false },
   headline: { type: String, maxlength: 80 },
-  headlineBn: { type: String, maxlength: 120 },
   terms: { type: String, maxlength: 300 },
-  termsBn: { type: String, maxlength: 400 },
-
   redemptions: { type: [redemptionSchema], default: [] },
 });
 
