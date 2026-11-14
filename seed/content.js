@@ -10,6 +10,7 @@ import { invalidateRestaurantCache } from '../services/restaurantService.js';
 import { restaurantData } from './data/restaurant.js';
 import { ADD_ONS, CATEGORIES, DISHES, INGREDIENTS, SUPPLIERS } from './data/menu.js';
 import { FAQS, GALLERY, TABLES, couponData } from './data/content.js';
+import { dishImages } from './data/photos.js';
 
 const DAY = 86_400_000;
 const DUPLICATE_KEY = 11000;
@@ -114,7 +115,7 @@ export async function seedContent({ now = new Date(), log = () => {} } = {}) {
     description: d.description,
     price: d.price,
     salePrice: d.salePrice ?? null,
-    images: [],
+    images: dishImages(d.slug),
     art: { motif: d.motif, seed: d.seed },
     optionGroups: d.groups.map((key) => need(addOns, key, 'option group')._id),
     tags: d.tags,
@@ -131,6 +132,17 @@ export async function seedContent({ now = new Date(), log = () => {} } = {}) {
     recipe: d.recipe.map((line) => ({ ingredient: need(ingredients, line.ingredient, 'ingredient')._id, quantity: line.quantity })),
   }));
   created.dishes = (await insertMissing(MenuItem, dishRows, 'slug')).length;
+
+  // A database seeded before the photographs existed holds the same dishes with no picture. Give those a photograph,
+  // but never replace one that somebody chose in the admin: only dishes whose `images` list is still empty match.
+  const photoOps = DISHES.filter((d) => dishImages(d.slug).length > 0).map((d) => ({
+    updateOne: {
+      filter: { slug: d.slug, $or: [{ images: { $exists: false } }, { images: { $size: 0 } }] },
+      update: { $set: { images: dishImages(d.slug) } },
+    },
+  }));
+  const photoResult = photoOps.length ? await MenuItem.bulkWrite(photoOps, { ordered: false }) : null;
+  created.photos = photoResult?.modifiedCount ?? 0;
 
   // The chef's special on the home page defaults to the hilsa, unless an owner already picked something.
   const hilsa = await MenuItem.findOne({ slug: 'ilish-bhapa' }).select('_id').lean();

@@ -12,6 +12,7 @@ import { fromLocal } from '../utils/dates.js';
 import { ADD_ONS, CATEGORIES, DISHES, INGREDIENTS, SUPPLIERS } from '../seed/data/menu.js';
 import { FAQS, GALLERY, TABLES, couponData } from '../seed/data/content.js';
 import { restaurantData } from '../seed/data/restaurant.js';
+import { DISH_PHOTOS, PEXELS_HOST, dishImages, pexelsUrl } from '../seed/data/photos.js';
 import { DEMO_CUSTOMERS, DEMO_STAFF } from '../seed/accounts.js';
 import { planDemoHistory } from '../seed/history.js';
 import { buildCatalogue } from '../seed/history/catalogue.js';
@@ -102,6 +103,28 @@ test('suppliers, ingredients, tables, FAQ, gallery and coupons have unique keys 
   for (const f of FAQS) assert.ok(f.question && f.answer, 'FAQ entries have a question and an answer');
   assert.ok(TABLES.some((t) => t.section === 'private'));
   assert.ok(INGREDIENTS.some((i) => i.stock <= i.low), 'some stock is deliberately low, so the low-stock alerts have something to show');
+});
+
+test('every dish has its own photograph, linked from Pexels, with a description of what the picture shows', () => {
+  const slugs = DISHES.map((d) => d.slug);
+  assert.deepEqual(Object.keys(DISH_PHOTOS).sort(), [...slugs].sort(), 'one photograph per dish, and none for a dish that does not exist');
+  const ids = Object.values(DISH_PHOTOS).map((p) => p.id);
+  assert.equal(new Set(ids).size, ids.length, 'no photograph is used for two dishes');
+  for (const [slug, photo] of Object.entries(DISH_PHOTOS)) {
+    assert.ok(Number.isInteger(photo.id) && photo.id > 0, `${slug}: a numeric Pexels id`);
+    assert.ok(photo.alt.length >= 12 && photo.alt.length <= 200, `${slug}: alt text is a real description and fits the model's 200 characters`);
+    const [image, ...rest] = dishImages(slug);
+    assert.equal(rest.length, 0, `${slug}: exactly one photograph`);
+    const url = new URL(image.url);
+    assert.equal(url.protocol, 'https:');
+    assert.equal(url.hostname, PEXELS_HOST);
+    assert.equal(url.pathname, `/photos/${photo.id}/pexels-photo-${photo.id}.jpeg`);
+    assert.equal(image.alt, photo.alt);
+  }
+  assert.equal(pexelsUrl(7, 480), `https://${PEXELS_HOST}/photos/7/pexels-photo-7.jpeg?auto=compress&cs=tinysrgb&w=480`);
+  assert.deepEqual(dishImages('no-such-dish'), [], 'a dish without an entry keeps its drawn picture');
+  // What --dry-run and the history generators see is what the database seed stores.
+  for (const item of catalogue.menu) assert.deepEqual(item.images, dishImages(item.slug));
 });
 
 test('no placeholder text anywhere in the seed data or the generated history', () => {
