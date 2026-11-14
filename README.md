@@ -55,13 +55,15 @@ After `npm run seed:demo`, every account uses the password **`Elan@Demo2026`** (
 
 `node seed.js --demo --dry-run` builds the demo data in memory and prints a summary without touching a database.
 
+The seed also gives every dish its photograph (`seed/data/photos.js`; credits in `docs/photo-credits.md`). Running it again on a database that already holds the dishes adds a photograph only to dishes that have none, never replacing one an owner chose. If the database holds another project's unique index (the cause of `E11000 duplicate key ... booking_1`), the seed stops and explains it; use a database of its own, or `--skip-index-check` if you know the index is harmless.
+
 ## Environment
 
 Copy `.env.example` and see the comments in it. The ones that matter most:
 
 | Variable | Purpose |
 |---|---|
-| `MONGODB_URI` | MongoDB connection string. Required in production. |
+| `MONGODB_URI` | MongoDB connection string. Required in production. End it with the database name (`.../elan`); if it names none, ÉLAN uses `elan` rather than MongoDB's default `test`. |
 | `CLIENT_ORIGINS` | Comma-separated exact origins of the website (no trailing slash, no wildcard). Production refuses `localhost`. |
 | `PUBLIC_CLIENT_URL` | The website's public address, used in e-mails and payment redirects |
 | `TRUST_PROXY` | Number of reverse proxies in front of the API: `1` with Render alone, `2` when the Vercel site forwards `/api` to Render |
@@ -78,7 +80,7 @@ Copy `.env.example` and see the comments in it. The ones that matter most:
 |---|---|
 | `npm run dev` | Start with automatic restart on file changes |
 | `npm start` | Start for production |
-| `npm test` | 123 unit tests, no database needed |
+| `npm test` | 130 unit tests, no database needed |
 | `npm run docs:api` | Regenerate the endpoint tables in `docs/api-documentation.md` from the real route files |
 
 ## Where things are
