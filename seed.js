@@ -10,6 +10,9 @@
 //
 // The demo accounts share a published password, so --demo and --reset refuse to run in production unless
 // ALLOW_DEMO_SEED=true is set on purpose.
+import dns from "node:dns";
+dns.setServers(["1.1.1.1", "8.8.8.8"]);
+
 import mongoose from 'mongoose';
 import { connectDb, disconnectDb } from './config/db.js';
 import { env } from './config/env.js';

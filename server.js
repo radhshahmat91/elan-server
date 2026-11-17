@@ -1,3 +1,6 @@
+import dns from "node:dns";
+dns.setServers(["1.1.1.1", "8.8.8.8"]);
+
 import http from 'node:http';
 import { env } from './config/env.js';
 import { connectDb, disconnectDb } from './config/db.js';
