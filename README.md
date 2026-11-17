@@ -2,9 +2,7 @@
 
 The Express and Socket.IO service behind **ÉLAN**, a candle-lit restaurant. It owns every business rule: pricing, order status flow, payments, reservations, permissions, rewards, inventory and analytics. The website (the sibling `client` repository) only shows what this service decides.
 
-> **Live API:** `https://REPLACE-WITH-YOUR-RENDER-ADDRESS.onrender.com` (a placeholder: replace it after deploying, then check `/api/health`).
-
-Shared documents (architecture, database design, the full API reference, test report, deployment guide, demo script and known limitations) are in the `docs/` folder of the project root.
+> **Live API:** https://elan-server-p8qd.onrender.com
 
 ## What it does
 
